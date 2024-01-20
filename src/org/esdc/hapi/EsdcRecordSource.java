@@ -46,7 +46,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
 
         @Override
         public boolean hasNext() {
-            return iter.hasNext();
+            return iter.hasNext(); // TODO: I suspect the first record must be read since it is a header.
         }
 
         @Override
@@ -54,7 +54,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
             try {
                 String line= iter.next();
                 String[] ss= SourceUtil.stringSplit(line);
-                if ( ss[0].startsWith("begin") && iter.hasNext() ) {
+                if ( ss[0].startsWith("begin") && iter.hasNext() ) { 
                     line= iter.next();
                     ss= SourceUtil.stringSplit(line);
                 }
