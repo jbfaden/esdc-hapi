@@ -18,5 +18,18 @@ wget -O - "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=A
 Info for Data items
 ```java
 "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20*%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
+wget -O - 'https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT+filename,+filepath+FROM+v_sc_data_item+WHERE+begin_time%3E%272020-08-29+00:00:00%27+AND+end_time%3C%272020-09-30+00:00:00%27+AND+data_item_id+LIKE+%27solo_L2_rpw-lfr-surv-asm%25%27'
 ```
+
+# Introduction
+config.json shows an example configuration file.  Note the jar file location
+will need to be updated.
+
+EsdcCatalogSource computes the catalog.
+
+EsdcInfoSource computes the infos.
+
+EsdcRecordSource computes the data, using the granule iterator (Iterator<int[]>)
+breaking the request into 1-file reads, and then a parameter-subset to get
+the data iterator (Iterator<HapiRecord>)
 
