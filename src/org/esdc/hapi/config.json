@@ -1,0 +1,31 @@
+{
+     "HAPI": "3.0",
+     "catalog": [
+         {
+             "x_group_id": "esdc",
+             "x_source": "classpath",
+             "x_class": "org.esdc.hapi.EsdcCatalogSource",
+             "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
+             "x_method": "getCatalog",
+             "x_config": {
+                 "info": {
+                     "x_source":"classpath",
+                     "x_class":"org.esdc.hapi.EsdcInfoSource",
+                     "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
+                     "x_method": "getInfo",
+                     "x_args": [ "${id}" ]
+                 },
+                 "data": {
+                     "x_source": "classpath",
+                     "x_class":"org.esdc.hapi.EsdcRecordSource",
+                     "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
+                     "x_args":["${id}"]
+                 }
+             }
+         }
+     ],
+     "status": {
+         "code": 1200,
+         "message": "OK request successful"
+     }
+ }
