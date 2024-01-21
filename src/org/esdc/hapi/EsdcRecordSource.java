@@ -77,7 +77,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         // https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT+filename,+filepath,file_format+FROM+v_sc_data_item&begin_time%3E%272020-08-29+00:00:28%27&end_time%3E%272020-09-06+00:00:28%27&file_format=%27CDF%27
         String begin= TimeUtil.formatIso8601Time(start);
         String end=  TimeUtil.formatIso8601Time(stop);
-        String url= "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=csv&QUERY=SELECT+begin_time,end_time,filename,+filepath+FROM+v_sc_data_item+WHERE+begin_time%3E%27"+begin+"%27+AND+end_time%3C%27"+end+"%27+AND+data_item_id+LIKE+%27"+id+"%25%27";
+        String url= "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=csv&QUERY=SELECT+begin_time,end_time,filename,+filepath+FROM+v_sc_data_item+WHERE+begin_time%3E%27"+begin+"%27+AND+end_time%3C%27"+end+"%27+AND+data_item_id+LIKE+%27"+id+"%25%27+ORDER+BY+begin_time+ASC";
         
         try {
             Iterator<String> iter= org.hapiserver.source.SourceUtil.getFileLines(new URL(url));
