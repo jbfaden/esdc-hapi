@@ -28,8 +28,9 @@ public class EsdcInfoSource {
             JSONObject result= new JSONObject();
             JSONArray parameters= new JSONArray();
             JSONObject parameter= new JSONObject();
-            parameter.put("name","Epoch");
+            parameter.put("name","EPOCH");
             parameter.put("type","isotime");
+            parameter.put("length","24");
             
             parameters.put( 0, parameter );
                 
@@ -40,11 +41,15 @@ public class EsdcInfoSource {
                 
                 parameter= new JSONObject();
                 parameter.put( "name", tapParameter.getString(23) );
-                parameter.put( "type", "float" );
+                parameter.put( "type", "double" );
                 String size= tapParameter.getString(25);
                 if ( size!=null ) {
-                    int i2= size.lastIndexOf(",");
-                    parameter.put( "size", "["+size+"]" );
+                    JSONArray sizeArray= new JSONArray();
+                    String[] ss= size.split(",");
+                    for ( int j=0; j<ss.length; j++ ) {
+                        sizeArray.put(j,Integer.parseInt(ss[j]));
+                    }
+                    parameter.put( "size", sizeArray );
                 }
                 parameters.put( i+1, parameter );
             }
@@ -62,6 +67,7 @@ public class EsdcInfoSource {
     }
     
     public static void main( String[] args ) throws IOException, JSONException {
-        System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
+        //System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
+        System.err.println( getInfo("solo_L2_mag-rtn-normal"));
     }
 }

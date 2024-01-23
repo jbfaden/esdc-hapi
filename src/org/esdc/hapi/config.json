@@ -19,7 +19,7 @@
                      "x_source": "classpath",
                      "x_class":"org.esdc.hapi.EsdcRecordSource",
                      "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
-                     "x_args":["${id}"]
+                     "x_args":["${id}","${info}"]
                  }
              }
          }

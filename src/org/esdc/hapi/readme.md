@@ -21,6 +21,13 @@ Info for Data items
 wget -O - 'https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT+filename,+filepath+FROM+v_sc_data_item+WHERE+begin_time%3E%272020-08-29+00:00:00%27+AND+end_time%3C%272020-09-30+00:00:00%27+AND+data_item_id+LIKE+%27solo_L2_rpw-lfr-surv-asm%25%27'
 ```
 
+# Test URLs
+http://localhost:8080/HapiServer/hapi/data?id=solo_L2_mag-rtn-normal&parameters=EPOCH&start=2023-09-01T00:00Z&stop=2023-09-05T00:00Z
+http://localhost:8080/HapiServer/hapi/data?id=solo_L2_mag-rtn-normal&start=2023-09-01T00:00Z&stop=2023-09-05T00:00Z
+http://localhost:8080/HapiServer/hapi/data?id=solo_L2_mag-rtn-normal&start=2023-09-03T00:00Z&stop=2023-09-04T00:00Z
+This shows where a 1-day list of files results in no files:
+https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=csv&QUERY=SELECT+begin_time,end_time,filename,filepath+FROM+v_sc_data_item+WHERE+end_time%3E%272023-09-03T00:00:00.000000000Z%27+AND+begin_time%3C%272023-09-04T00:00:00.000000000Z%27+AND+data_item_id+LIKE+%27solo_L2_mag-rtn-normal%25%27+ORDER+BY+begin_time+ASC
+
 # Introduction
 config.json shows an example configuration file.  Note the jar file location
 will need to be updated.
