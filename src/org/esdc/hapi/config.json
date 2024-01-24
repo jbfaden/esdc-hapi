@@ -22,7 +22,29 @@
                      "x_args":["${id}","${info}"]
                  }
              }
-         }
+         },
+         {
+             "x_group_id": "esdc-availability",
+             "x_source": "classpath",
+             "x_class": "org.esdc.hapi.EsdcAvailabilityInfoSource",
+             "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
+             "x_method": "getCatalog",
+             "x_config": {
+                 "info": {
+                     "x_source":"classpath",
+                     "x_class":"org.esdc.hapi.EsdcAvailabilityInfoSource",
+                     "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
+                     "x_method": "getInfo",
+                     "x_args": [ "${id}" ]
+                 },
+                 "data": {
+                     "x_source": "classpath",
+                     "x_class":"org.esdc.hapi.EsdcAvailabilityHapiRecordSource",
+                     "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar",
+                     "x_args":["${id}","${info}"]
+                 }
+             }
+         }         
      ],
      "status": {
          "code": 1200,
