@@ -440,6 +440,28 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         return flattenedArray;
     }
     
+    /**
+     * flatten 3-D array into 2-D.  Thanks, Bard!
+     * @param array
+     * @return 
+     */
+    public static double[][] flatten(double[][][][] array) {
+        int len1= array[0].length * array[0][0].length * array[0][0][0].length;
+        double[][] flattenedArray = new double[array.length][len1];
+        int index;
+        for (int i = 0; i < array.length; i++) {
+            index=0;
+            for (int j = 0; j < array[i].length; j++) {
+                for (int k = 0; k < array[i][j].length; k++) {
+                    System.arraycopy(array[i][j][k], 0, flattenedArray[i], index, array[i][j][k].length);
+                    index+=array[i][j][k].length;
+                }
+            }
+        }
+
+        return flattenedArray;
+    }
+    
     private double[][] flattenDoubleArray( Object array ) {
         int numDimensions = 1;
         Class<?> componentType = array.getClass().getComponentType();
@@ -452,8 +474,10 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
                 return (double[][])array;
             case 3:
                 return flatten((double[][][])array);
+            case 4:
+                return flatten((double[][][][])array);
             default:
-                throw new IllegalArgumentException("Not supported: rank 4");
+                throw new IllegalArgumentException("Not supported: rank>4");
         }
     }
     
