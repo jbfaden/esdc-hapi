@@ -5,25 +5,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.hapiserver.source.SourceUtil;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * Produce the catalog response for the ESDC-SOAR HAPI server
@@ -46,15 +34,16 @@ public class EsdcCatalogSource {
     /**
      * Read the CSV data from the URL and return it as a JSON catalog response.
      * https://soar.esac.esa.int/soar-sl-tap/tap/sync?"
-            + "REQUEST=doQuery&LANG=ADQL&FORMAT=CSV"
-            + "&QUERY=SELECT+distinct(logical_source),logical_source_description"
-            + "+FROM+soar.v_cdf_dataset"
-            + "+WHERE+logical_source+LIKE%20%27solo_L2_%25%25%27"
+     *       + "REQUEST=doQuery&LANG=ADQL&FORMAT=CSV"
+     *       + "&QUERY=SELECT+distinct(logical_source),logical_source_description"
+     *       + "+FROM+soar.v_cdf_dataset"
+     *       + "+WHERE+logical_source+LIKE%20%27solo_L2_%25%25%27"
+     * @param prefix prefix all ids with this (to support availability)
      * @return JSON catalog response with the schema https://github.com/hapi-server/data-specification-schema/blob/jon-jeremy-mess-3.0/3.1/catalog.json
      * @throws IOException
      * @throws JSONException 
      */
-    private static String getCatalogCsv( ) throws IOException, JSONException {
+    public static String getCatalogCsv( String prefix ) throws IOException, JSONException {
         URL url = new URL("https://soar.esac.esa.int/soar-sl-tap/tap/sync?"
             + "REQUEST=doQuery&LANG=ADQL&FORMAT=CSV"
             + "&QUERY=SELECT+distinct(logical_source),logical_source_description"
@@ -80,7 +69,7 @@ public class EsdcCatalogSource {
                     s = ins.readLine();
                     continue;
                 }
-                jo.put("id", id);
+                jo.put("id", prefix + id);
                 String t = s.substring(i + 1).trim();
                 if (t.startsWith("\"") && t.endsWith("\"")) {
                     t = t.substring(1, t.length() - 1);
@@ -113,42 +102,8 @@ public class EsdcCatalogSource {
      */
     public static String getCatalog() throws IOException {
         try {
-            if ( true ) {
-                return getCatalogCsv( );
-            } else {
-                // "https://csa.esac.esa.int/csa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=CSV&QUERY=SELECT+dataset_id,title+FROM+csa.v_dataset";
-                // "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=CSV&QUERY=SELECT+distinct(logical_source),logical_source_description+FROM+soar.v_cdf_dataset+WHERE+logical_source+LIKE%20%27solo_L2_%25%25%27";
-
-                URL url= new URL("https://soar.esac.esa.int/soar-sl-tap/tap/tables");
-                //URL url= new File("/home/jbf/temp/esdc-hapi/src/org/esdc/hapi/tables-2.xml").toURI().toURL();
-                Document doc= SourceUtil.readDocument(url);
-                XPathFactory factory = XPathFactory.newInstance();
-                XPath xpath = (XPath) factory.newXPath();
-                NodeList nodes = (NodeList) xpath.evaluate( "//tableset/schema/table/name/text()", doc, XPathConstants.NODESET );
-
-                int ic= 0;
-                JSONArray catalog= new JSONArray();
-                for ( int i=0; i<nodes.getLength(); i++ ) {
-                    Node node= nodes.item(i);
-                    NamedNodeMap attrs= node.getAttributes();
-
-                    if ( true ) {
-                        String name= node.getTextContent();
-
-                        if ( true ) {
-                            JSONObject jo= new JSONObject();
-                            jo.put( "id", name );
-                            catalog.put( ic++, jo );
-                        }
-                    }
-
-                }
-
-                JSONObject result= new JSONObject();
-                result.put( "catalog", catalog );
-                return result.toString(4);
-            }
-        } catch (MalformedURLException | SAXException | ParserConfigurationException | XPathExpressionException | JSONException ex) {
+            return getCatalogCsv( "" );
+        } catch ( IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
