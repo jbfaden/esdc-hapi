@@ -57,6 +57,10 @@ public class EsdcInfoSource {
             result.put("parameters",parameters);
             result.put("startDate","2023-01-01T00:00Z");
             result.put("stopDate","2024-01-01T00:00Z");
+
+            result.put("sampleStartDate","2023-09-01T00:00Z");
+            result.put("sampleStopDate","2023-09-02T00:00Z");
+            
             result.put("HAPI","3.1");
             
             return result.toString(4);
