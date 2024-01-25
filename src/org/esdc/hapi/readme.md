@@ -41,3 +41,4 @@ EsdcRecordSource computes the data, using the granule iterator (Iterator<int[]>)
 breaking the request into 1-file reads, and then a parameter-subset to get
 the data iterator (Iterator<HapiRecord>)
 
+EsdcAvailabilityInfoSource and EsdcAvailabilityHapiRecordSource implement availability.
