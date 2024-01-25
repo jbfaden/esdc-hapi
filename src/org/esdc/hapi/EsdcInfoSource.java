@@ -40,6 +40,7 @@ public class EsdcInfoSource {
             parameter.put("type","isotime");
             parameter.put("length","24");
             parameter.put("units","UTC");
+            parameter.put("fill",JSONObject.NULL);
             
             parameters.put( 0, parameter );
                 
@@ -60,6 +61,7 @@ public class EsdcInfoSource {
                     parameter.put( "size", sizeArray );
                 }
                 parameter.put( "units", tapParameter.getString(3) );
+                parameter.put( "fill", JSONObject.NULL );
                 parameters.put( i+1, parameter );
             }
             
