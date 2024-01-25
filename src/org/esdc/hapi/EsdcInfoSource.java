@@ -38,7 +38,7 @@ public class EsdcInfoSource {
             
             parameter.put("name",depend0name);
             parameter.put("type","isotime");
-            parameter.put("length","24");
+            parameter.put("length",24);
             parameter.put("units","UTC");
             parameter.put("fill",JSONObject.NULL);
             
