@@ -20,29 +20,36 @@ public class EsdcInfoSource {
     
     public static String getInfo( String id ) throws IOException, JSONException {
         try {
-            String urlString= "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20*%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
+            
+            // Here's what we need: depend0, var_name, var_sizes
+            String svr= "https://soar.esac.esa.int/soar-sl-tap/tap/sync";
+            String select= "depend0,var_name,var_sizes";
+            String urlString= svr + "?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20"+select+"%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
             String tapJsonSrc= SourceUtil.getAllFileLines( new URL(urlString) );
             
             JSONObject tapResponse= new JSONObject(tapJsonSrc);
+            JSONArray tapParameters= tapResponse.getJSONArray("data");
             
             JSONObject result= new JSONObject();
             JSONArray parameters= new JSONArray();
             JSONObject parameter= new JSONObject();
-            parameter.put("name","EPOCH");
+            
+            String depend0name= tapParameters.getJSONArray(0).getString(0);
+            
+            parameter.put("name",depend0name);
             parameter.put("type","isotime");
             parameter.put("length","24");
             
             parameters.put( 0, parameter );
                 
-            JSONArray tapParameters= tapResponse.getJSONArray("data");
             
             for ( int i=0; i<tapParameters.length(); i++ ) {
                 JSONArray tapParameter= tapParameters.getJSONArray(i);
                 
                 parameter= new JSONObject();
-                parameter.put( "name", tapParameter.getString(23) );
+                parameter.put( "name", tapParameter.getString(1) );
                 parameter.put( "type", "double" );
-                String size= tapParameter.getString(25);
+                String size= tapParameter.getString(2);
                 if ( size!=null ) {
                     JSONArray sizeArray= new JSONArray();
                     String[] ss= size.split(",");
