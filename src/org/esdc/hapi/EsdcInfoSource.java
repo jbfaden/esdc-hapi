@@ -23,7 +23,7 @@ public class EsdcInfoSource {
             
             // Here's what we need: depend0, var_name, var_sizes
             String svr= "https://soar.esac.esa.int/soar-sl-tap/tap/sync";
-            String select= "depend0,var_name,var_sizes";
+            String select= "depend0,var_name,var_sizes,var_units";
             String urlString= svr + "?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20"+select+"%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
             String tapJsonSrc= SourceUtil.getAllFileLines( new URL(urlString) );
             
@@ -39,6 +39,7 @@ public class EsdcInfoSource {
             parameter.put("name",depend0name);
             parameter.put("type","isotime");
             parameter.put("length","24");
+            parameter.put("units","UTC");
             
             parameters.put( 0, parameter );
                 
@@ -58,6 +59,7 @@ public class EsdcInfoSource {
                     }
                     parameter.put( "size", sizeArray );
                 }
+                parameter.put( "units", tapParameter.getString(3) );
                 parameters.put( i+1, parameter );
             }
             
