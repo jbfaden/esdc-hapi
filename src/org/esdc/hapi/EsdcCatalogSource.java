@@ -43,7 +43,7 @@ public class EsdcCatalogSource {
      * @throws IOException
      * @throws JSONException 
      */
-    public static String getCatalogCsv( String prefix ) throws IOException, JSONException {
+    public static String getCatalog( String prefix ) throws IOException, JSONException {
         URL url = new URL("https://soar.esac.esa.int/soar-sl-tap/tap/sync?"
             + "REQUEST=doQuery&LANG=ADQL&FORMAT=CSV"
             + "&QUERY=SELECT+distinct(logical_source),logical_source_description"
@@ -102,13 +102,13 @@ public class EsdcCatalogSource {
      */
     public static String getCatalog() throws IOException {
         try {
-            return getCatalogCsv( "" );
+            return getCatalog( "" );
         } catch ( IOException | JSONException ex) {
             throw new RuntimeException(ex);
         }
     }
 
     public static void main( String[] args ) throws IOException {
-        System.err.println( getCatalog() );
+        System.err.println(EsdcCatalogSource.getCatalog() );
     }
 }
