@@ -1,3 +1,18 @@
+# Introduction
+This HAPI server is to provide data from the ESA Solar Orbiter (SOAR) mission.  It interfaces
+with a TAP server at esac.esa.int to locate CDF files which contain the data.  It runs remotely
+by copying the files to a temporary directory, or when installed locally in a production 
+server by accessing the data files via java.io.File.
+
+This server provides availability showing where CDF files are found, and the data from CDF files
+using the same code created for CDAWeb's HAPI server.
+
+Below are notes used during development of the server.
+
+Feature Ticket: https://github.com/hapi-server/server-java/issues/32
+
+Description of TAP service: https://www.cosmos.esa.int/web/soar/metadata-request
+
 # Getting Catalog
 https://soar.esac.esa.int/soar-sl-tap/tap/tables
 
