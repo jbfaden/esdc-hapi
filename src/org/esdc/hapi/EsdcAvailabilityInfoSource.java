@@ -177,10 +177,17 @@ public class EsdcAvailabilityInfoSource {
         JSONArray cc= jo.getJSONArray("catalog");
         for ( int i=0; i<cc.length(); i++ ) {
             String id= cc.getJSONObject(i).getString("id");
+            System.err.println("Loading sample time and file for "+id);
             try {
                 String[] ss= EsdcAvailabilityInfoSource.getExtent(id);
                 p.println( String.format( "%s,%s,%s,%s,%s", id, ss[0], ss[1], ss[2], ss[3] ) );
-                Thread.sleep(10000);
+                EsdcRecordSource recordSource= new EsdcRecordSource(id,null);
+                Iterator<int[]> it= recordSource.getGranuleIterator( TimeUtil.parseISO8601Time(ss[2]), TimeUtil.parseISO8601Time(ss[3]) );
+                if ( it.hasNext() ) {
+                    it.next();
+                }
+                recordSource.getIterator( TimeUtil.parseISO8601Time(ss[2]), TimeUtil.parseISO8601Time(ss[3]), new String[] {} );
+                Thread.sleep(1000);
             } catch ( Exception ex ) {
                 ex.printStackTrace();
                 System.err.println("fail: "+id);
