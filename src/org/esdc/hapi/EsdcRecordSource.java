@@ -10,6 +10,7 @@ import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -68,7 +69,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
                 + "+WHERE+filename=%27"+ff + "%27" );
 
             String u= System.getProperty("user.name"); // getProcessId("000");
-            File p= new File( "/home/tomcat/tmp/"+u+"/" );
+            File p= new File( "/home/tomcat/tmp/esdc/"+u+"/" );
 
             if ( !p.exists() ) {
                 if ( !p.mkdirs() ) {
@@ -170,7 +171,9 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
                 throw new IllegalStateException("this shouldn't happen");
             }
             
+            logger.log(Level.FINE, "getting CDF file {0}...", filename);
             File cdfFile= getCdfFile(filename);
+            logger.log(Level.FINE, "got CDF file {0}.", cdfFile);
             
             CdfFileRecordIterator result= new CdfFileRecordIterator( info, start, stop, params, cdfFile );
             return result;
