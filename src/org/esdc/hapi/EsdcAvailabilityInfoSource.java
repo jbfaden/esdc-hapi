@@ -181,12 +181,8 @@ public class EsdcAvailabilityInfoSource {
             try {
                 String[] ss= EsdcAvailabilityInfoSource.getExtent(id);
                 p.println( String.format( "%s,%s,%s,%s,%s", id, ss[0], ss[1], ss[2], ss[3] ) );
-                EsdcRecordSource recordSource= new EsdcRecordSource(id,null);
-                Iterator<int[]> it= recordSource.getGranuleIterator( TimeUtil.parseISO8601Time(ss[2]), TimeUtil.parseISO8601Time(ss[3]) );
-                if ( it.hasNext() ) {
-                    it.next();
-                }
-                recordSource.getIterator( TimeUtil.parseISO8601Time(ss[2]), TimeUtil.parseISO8601Time(ss[3]), new String[] {} );
+                EsdcRecordSource recsrc= new EsdcRecordSource("solo_L2_epd-ept-south-rates",null);
+                System.err.println( recsrc.getSampleCdfFile() );
                 Thread.sleep(1000);
             } catch ( Exception ex ) {
                 ex.printStackTrace();

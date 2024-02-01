@@ -79,10 +79,10 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
 
             File f= new File( p, ff );
             if ( f.exists() ) {
-                long ageMillis= System.currentTimeMillis()-f.lastModified();
-                if ( ageMillis<3600000 ) {
+                //long ageMillis= System.currentTimeMillis()-f.lastModified();
+                //if ( ageMillis<00000 ) {
                     return f;
-                }
+                //}
             }
             
             return SourceUtil.downloadFile( url, f );
@@ -160,6 +160,38 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         return true;
     }
 
+    /**
+     * return the File used as the sample file for the dataset.  The EsdcRecordSource can be called
+     * with null used for the JSONObject, and then this can be called:
+     * <code>
+     * EsdcRecordSource recsrc= new EsdcRecordSource("solo_L2_epd-ept-south-rates",null);
+     * System.err.println( recsrc.getSampleCdfFile() );
+     * </code>
+     * @return
+     * @throws IOException 
+     */
+    public File getSampleCdfFile( ) throws IOException {
+        try {
+            String[] ss= EsdcAvailabilityInfoSource.getExtent(id);
+            int[] start= TimeUtil.parseISO8601Time(ss[2]);
+            int[] stop= TimeUtil.parseISO8601Time(ss[3]);
+            Iterator<int[]> it= this.getGranuleIterator( start, stop );
+            while ( it.hasNext() ) {
+                it.next();
+            }
+            String starts= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", start[0], start[1], start[2], start[3], start[4], start[5], start[6] );
+            String stops= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", stop[0], stop[1], stop[2], stop[3], stop[4], stop[5], stop[6]);
+            String key= starts + "/" + stops;
+            String filename= files.get(key);
+            if ( filename==null ) {
+                throw new IllegalStateException("this shouldn't happen");
+            }
+            return getCdfFile(filename);
+        } catch (ParseException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     @Override
     public Iterator<HapiRecord> getIterator(int[] start, int[] stop, String[] params) {
         try {

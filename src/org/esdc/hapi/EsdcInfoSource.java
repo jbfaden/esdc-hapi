@@ -1,9 +1,14 @@
 package org.esdc.hapi;
 
+import gov.nasa.gsfc.spdf.cdfj.CDFException;
+import gov.nasa.gsfc.spdf.cdfj.CDFReader;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -19,12 +24,42 @@ import org.hapiserver.source.SourceUtil;
  */
 public class EsdcInfoSource {
     
+    private static final Logger logger= Logger.getLogger("hapi.esdc");
+    
+    private static String getUnits( CDFReader reader, String name ) throws CDFException.ReaderError {
+        Object o= reader.getAttribute(name,"UNITS");
+        String u= null;
+        if ( o instanceof Vector ) {    // yuck
+            u= (String)((Vector)o).get(0);
+        }
+        return u;
+    }
+    
+    private static JSONObject getBins( File cdfFile, String name, int len ) throws CDFException.ReaderError, JSONException {
+        CDFReader reader= new CDFReader(cdfFile.toString());
+        double[] dd= reader.getOneD(name, true);
+        JSONObject bins= new JSONObject();
+        JSONArray centers= new JSONArray();
+        for ( int i=0; i<dd.length; i++ ) {
+            centers.put(i,dd[i]);
+        }
+        bins.put("centers", centers);
+        bins.put("name",name );
+        String u= getUnits( reader, name );
+        if ( u!=null && u.length()>0 ) {
+            bins.put("units", u );
+        } else {
+            bins.put("units", JSONObject.NULL );
+        }
+        return bins;
+    }
+    
     public static String getInfo( String id ) throws IOException, JSONException {
         try {
             
             // Here's what we need: depend0, var_name, var_sizes
             String svr= "https://soar.esac.esa.int/soar-sl-tap/tap/sync";
-            String select= "depend0,var_name,var_sizes,var_units";
+            String select= "depend0,var_name,var_sizes,var_units,depend1,depend2,depend3";
             String urlString= svr + "?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20"+select+"%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
             String tapJsonSrc= SourceUtil.getAllFileLines( new URL(urlString) );
             
@@ -46,7 +81,8 @@ public class EsdcInfoSource {
             parameter.put("fill",JSONObject.NULL);
             
             parameters.put( 0, parameter );
-                
+            
+            File cdfFile= null;
             
             for ( int i=0; i<tapParameters.length(); i++ ) {
                 JSONArray tapParameter= tapParameters.getJSONArray(i);
@@ -62,6 +98,21 @@ public class EsdcInfoSource {
                         sizeArray.put(j,Integer.parseInt(ss[j]));
                     }
                     parameter.put( "size", sizeArray );
+                    JSONArray binsArray= new JSONArray();
+                    for ( int j=0; j<ss.length; j++ ) {
+                        if ( cdfFile==null ) {
+                            EsdcRecordSource recsrc= new EsdcRecordSource(id,null);
+                            cdfFile= recsrc.getSampleCdfFile();
+                            JSONObject bins;
+                            try {
+                                bins = getBins(cdfFile,tapParameter.getString(4+j),sizeArray.getInt(j));
+                                binsArray.put(j,bins);
+                            } catch (CDFException.ReaderError ex) {
+                                logger.log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                    if ( ss.length>0 ) parameter.put( "bins", binsArray );
                 }
                 parameter.put( "units", tapParameter.getString(3) );
                 parameter.put( "fill", JSONObject.NULL );
@@ -86,6 +137,7 @@ public class EsdcInfoSource {
     
     public static void main( String[] args ) throws IOException, JSONException {
         //System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
-        System.err.println( getInfo("solo_L2_mag-rtn-normal"));
+        //System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
+        System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
     }
 }
