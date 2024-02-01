@@ -179,6 +179,7 @@ public class EsdcInfoSource {
             result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
             
             result.put("HAPI","3.1");
+            result.put("x_version", "20240201.1");
             
             return result.toString(4);
             
