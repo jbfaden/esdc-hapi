@@ -37,10 +37,11 @@ public class EsdcInfoSource {
     
     private static JSONObject getBins( File cdfFile, String name, int len ) throws CDFException.ReaderError, JSONException {
         CDFReader reader= new CDFReader(cdfFile.toString());
-        double[] dd= reader.getOneD(name, true);
+        Object o = reader.getOneD(name, true);
+        double[] dd= (double[]) o;
         JSONObject bins= new JSONObject();
         JSONArray centers= new JSONArray();
-        for ( int i=0; i<dd.length; i++ ) {
+        for ( int i=0; i<len; i++ ) {
             centers.put(i,dd[i]);
         }
         bins.put("centers", centers);
@@ -103,10 +104,16 @@ public class EsdcInfoSource {
                         if ( cdfFile==null ) {
                             EsdcRecordSource recsrc= new EsdcRecordSource(id,null);
                             cdfFile= recsrc.getSampleCdfFile();
+                        }
+                        if ( cdfFile!=null ) {
                             JSONObject bins;
                             try {
-                                bins = getBins(cdfFile,tapParameter.getString(4+j),sizeArray.getInt(j));
-                                binsArray.put(j,bins);
+                                String depname= tapParameter.getString(4+j);
+                                int len= sizeArray.getInt(j);
+                                if ( depname!=null ) {
+                                    bins = getBins(cdfFile,depname,len);
+                                    binsArray.put(j,bins);
+                                }
                             } catch (CDFException.ReaderError ex) {
                                 logger.log(Level.SEVERE, null, ex);
                             }
@@ -138,6 +145,7 @@ public class EsdcInfoSource {
     public static void main( String[] args ) throws IOException, JSONException {
         //System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
         //System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
-        System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
+        System.err.println( getInfo("solo_L2_rpw-tnr-surv")); //spectrograms  rank 2 frequencies: file:///home/tomcat/tmp/esdc/jbf/solo_L2_rpw-tnr-surv_20230920_V01.cdf?FREQUENCY
+        //System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
     }
 }
