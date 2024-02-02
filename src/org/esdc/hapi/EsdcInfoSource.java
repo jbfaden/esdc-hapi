@@ -218,9 +218,16 @@ public class EsdcInfoSource {
     
     public static void main( String[] args ) throws IOException, JSONException, CDFException.ReaderError {
         //System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
-        System.err.println( getInfo("solo_L2_rpw-lfr-surv-swf-b"));
+        //System.err.println( getInfo("solo_L2_rpw-lfr-surv-swf-b"));
         //System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
         //System.err.println( getInfo("solo_L2_rpw-tnr-surv")); //spectrograms  rank 2 frequencies: file:///home/tomcat/tmp/esdc/jbf/solo_L2_rpw-tnr-surv_20230920_V01.cdf?FREQUENCY
         //System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
+        
+        System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-psd") );
+        System.err.println( getInfo("solo_L2_mag-rtn derived from LL data") );
+        System.err.println( getInfo("solo_L2_mag-srf derived from LL data") );
+        System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-def") );
+        System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-dnf") );
+
     }
 }

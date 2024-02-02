@@ -49,7 +49,14 @@ public class EsdcCatalogSource {
             + "&QUERY=SELECT+distinct(logical_source),logical_source_description"
             + "+FROM+soar.v_cdf_dataset"
             + "+WHERE+logical_source+LIKE%20%27solo_L2_%25%25%27");
+        logger.log(Level.FINE, "get {0}", url);
         HashSet exclude= new HashSet();
+        exclude.add("solo_L2a_swa-eas1-nm3d-psd");
+        exclude.add("solo_L2_mag-rtn derived from LL data");
+        exclude.add("solo_L2_mag-srf derived from LL data");
+        exclude.add("solo_L2a_swa-eas1-nm3d-def");
+        exclude.add("solo_L2a_swa-eas1-nm3d-dnf");
+        
         JSONArray catalog = new JSONArray();
         try (InputStream in = url.openStream()) {
             BufferedReader ins = new BufferedReader(new InputStreamReader(in));
