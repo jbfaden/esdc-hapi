@@ -218,7 +218,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         
     }
     
-    public static void main( String[] args ) throws ParseException, IOException, JSONException {
+    public static void main( String[] args ) throws ParseException, IOException, JSONException, CDFException.ReaderError {
         //String id= "solo_L2_rpw-lfr-surv-asm";
         //String id= "solo_L2_mag-srf";
         //String id= "solo_L2_swa-eas-pad-psd";
