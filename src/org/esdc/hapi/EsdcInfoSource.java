@@ -204,7 +204,7 @@ public class EsdcInfoSource {
             result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
             
             result.put("HAPI","3.1");
-            result.put("x_version", "20240202.2");
+            result.put("x_version", "20240202.3");
             result.put("x_tap_query", tapQuery );
             result.put("x_cdf_file", cdfFile.toString() );
             
