@@ -164,7 +164,7 @@ public class EsdcInfoSource {
                             }
                         }
                     }
-                    if ( ss.length>0 ) parameter.put( "bins", binsArray );
+                    if ( ss.length>0 && binsArray.length()>0 ) parameter.put( "bins", binsArray );
                 }
                 parameter.put( "units", tapParameter.getString(3) );
                 parameter.put( "fill", JSONObject.NULL );
@@ -190,8 +190,8 @@ public class EsdcInfoSource {
     
     public static void main( String[] args ) throws IOException, JSONException {
         //System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
-        //System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
+        System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
         //System.err.println( getInfo("solo_L2_rpw-tnr-surv")); //spectrograms  rank 2 frequencies: file:///home/tomcat/tmp/esdc/jbf/solo_L2_rpw-tnr-surv_20230920_V01.cdf?FREQUENCY
-        System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
+        //System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
     }
 }
