@@ -39,7 +39,7 @@ public class EsdcInfoSource {
     
     private static Map<File,Map<String,JSONObject>> cache;
     
-    private static JSONObject getBins( File cdfFile, String name, int len ) throws CDFException.ReaderError, JSONException {
+    private static JSONObject getBins( File cdfFile, CDFReader reader, String name, int len ) throws CDFException.ReaderError, JSONException {
         
         if ( cache==null ) {
             synchronized ( EsdcInfoSource.class ) {
@@ -58,7 +58,6 @@ public class EsdcInfoSource {
             }
         }
         
-        CDFReader reader= new CDFReader(cdfFile.toString());
         Object o = reader.getOneD(name, true);
         if ( o==null && !( o instanceof double[]) ) return null;
         double[] dd= (double[]) o;
@@ -76,7 +75,7 @@ public class EsdcInfoSource {
             }
             bins.put("centers", centers);
             bins.put("name",name );
-            String u= getUnits( reader, name );
+            String u= getUnits( reader, name ).trim();
             if ( u!=null && u.length()>0 ) {
                 bins.put("units", u );
             } else {
@@ -96,14 +95,27 @@ public class EsdcInfoSource {
         return bins;
     }
     
-    public static String getInfo( String id ) throws IOException, JSONException {
+    private static String getFillValue( CDFReader cdfReader, String name ) throws CDFException.ReaderError {
+        Vector v= (Vector)cdfReader.getAttribute(name,"FILLVAL");
+        if ( v.size()==1 ) {
+            if ( v.get(0) instanceof double[] ) {
+                double[] v1= (double[])v.get(0);
+                if ( v1.length==1 ) {
+                    return String.valueOf(v1[0]);
+                }
+            }
+        } 
+        return null;
+    }
+    
+    public static String getInfo( String id ) throws IOException, JSONException, CDFException.ReaderError {
         try {
             
             // Here's what we need: depend0, var_name, var_sizes
             String svr= "https://soar.esac.esa.int/soar-sl-tap/tap/sync";
             String select= "depend0,var_name,var_sizes,var_units,depend1,depend2,depend3";
-            String urlString= svr + "?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20"+select+"%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
-            String tapJsonSrc= SourceUtil.getAllFileLines( new URL(urlString) );
+            String tapQuery= svr + "?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20"+select+"%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
+            String tapJsonSrc= SourceUtil.getAllFileLines( new URL(tapQuery) );
             
             String[] extent= EsdcAvailabilityInfoSource.getExtent(id);
             
@@ -124,13 +136,18 @@ public class EsdcInfoSource {
             
             parameters.put( 0, parameter );
             
-            File cdfFile= null;
-            
+            File cdfFile;
+            EsdcRecordSource recsrc= new EsdcRecordSource(id,null);
+            cdfFile= recsrc.getSampleCdfFile();
+           
+            CDFReader cdfReader= new CDFReader(cdfFile.toString());
+
             for ( int i=0; i<tapParameters.length(); i++ ) {
                 JSONArray tapParameter= tapParameters.getJSONArray(i);
                 
+                String name = tapParameter.getString(1);
                 parameter= new JSONObject();
-                parameter.put( "name", tapParameter.getString(1) );
+                parameter.put( "name", name );
                 parameter.put( "type", "double" );
                 String size= tapParameter.getString(2);
                 if ( size!=null ) {
@@ -141,33 +158,35 @@ public class EsdcInfoSource {
                     }
                     parameter.put( "size", sizeArray );
                     JSONArray binsArray= new JSONArray();
+                    boolean binsHasNonNull= false;
                     for ( int j=0; j<ss.length; j++ ) {
-                        if ( cdfFile==null ) {
-                            EsdcRecordSource recsrc= new EsdcRecordSource(id,null);
-                            cdfFile= recsrc.getSampleCdfFile();
-                        }
-                        if ( cdfFile!=null ) {
-                            JSONObject bins;
-                            try {
-                                String depname= tapParameter.getString(4+j);
-                                int len= sizeArray.getInt(j);
-                                if ( depname!=null ) {
-                                    bins = getBins(cdfFile,depname,len);
-                                    if ( bins==null ) {
-                                        binsArray.put(j,JSONObject.NULL);
-                                    } else {
-                                        binsArray.put(j,bins);
-                                    }
+                        JSONObject bins;
+                        try {
+                            String depname= tapParameter.getString(4+j);
+                            int len= sizeArray.getInt(j);
+                            if ( depname!=null ) {
+                                bins = getBins(cdfFile,cdfReader,depname,len);
+                                if ( bins==null ) {
+                                    binsArray.put(j,JSONObject.NULL);
+                                } else {
+                                    binsArray.put(j,bins);
+                                    binsHasNonNull= true;
                                 }
-                            } catch (CDFException.ReaderError ex) {
-                                logger.log(Level.SEVERE, null, ex);
                             }
+                        } catch (CDFException.ReaderError ex) {
+                            logger.log(Level.SEVERE, null, ex);
                         }
                     }
-                    if ( ss.length>0 && binsArray.length()>0 ) parameter.put( "bins", binsArray );
+                    if ( binsHasNonNull && ss.length>0 && binsArray.length()>0 ) parameter.put( "bins", binsArray );
                 }
-                parameter.put( "units", tapParameter.getString(3) );
-                parameter.put( "fill", JSONObject.NULL );
+                String units= tapParameter.getString(3).trim();
+                if ( units.length()>0 ) {
+                    parameter.put( "units", tapParameter.getString(3) );
+                } else {
+                    parameter.put( "units", JSONObject.NULL );
+                }
+                parameter.put( "fill", getFillValue(cdfReader,name) );
+                parameter.setEscapeForwardSlashAlways(false);
                 parameters.put( i+1, parameter );
             }
             
@@ -179,8 +198,11 @@ public class EsdcInfoSource {
             result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
             
             result.put("HAPI","3.1");
-            result.put("x_version", "20240201.2");
+            result.put("x_version", "20240202.2");
+            result.put("x_tap_query", tapQuery );
+            result.put("x_cdf_file", cdfFile.toString() );
             
+            result.setEscapeForwardSlashAlways(false);
             return result.toString(4);
             
         } catch (MalformedURLException ex) {
@@ -188,10 +210,10 @@ public class EsdcInfoSource {
         }
     }
     
-    public static void main( String[] args ) throws IOException, JSONException {
+    public static void main( String[] args ) throws IOException, JSONException, CDFException.ReaderError {
         //System.err.println( getInfo("solo_L2_rpw-lfr-surv-cwf-b"));
-        System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
-        //System.err.println( getInfo("solo_L2_rpw-tnr-surv")); //spectrograms  rank 2 frequencies: file:///home/tomcat/tmp/esdc/jbf/solo_L2_rpw-tnr-surv_20230920_V01.cdf?FREQUENCY
+        //System.err.println( getInfo("solo_L2_mag-rtn-normal")); //
+        System.err.println( getInfo("solo_L2_rpw-tnr-surv")); //spectrograms  rank 2 frequencies: file:///home/tomcat/tmp/esdc/jbf/solo_L2_rpw-tnr-surv_20230920_V01.cdf?FREQUENCY
         //System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
     }
 }
