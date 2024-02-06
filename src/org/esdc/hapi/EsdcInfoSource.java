@@ -181,9 +181,10 @@ public class EsdcInfoSource {
                     for ( int j=0; j<ss.length; j++ ) {
                         JSONObject bins;
                         try {
-                            String depname= tapParameter.getString(4+j).trim();
+                            String depname= tapParameter.getString(4+j);
                             int len= sizeArray.getInt(j);
                             if ( depname!=null ) {
+                                depname= depname.trim();
                                 bins = getBins(cdfFile,cdfReader,depname,len);
                                 if ( bins==null ) {
                                     bins = getBinsIndgen(depname,len);
