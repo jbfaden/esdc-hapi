@@ -95,6 +95,19 @@ public class EsdcInfoSource {
         return bins;
     }
     
+    private static JSONObject getBinsIndgen(String depname, int len) throws JSONException {
+        JSONObject bins = new JSONObject();
+        JSONArray centers= new JSONArray();
+        for ( int i=0; i<len; i++ ) {
+            centers.put(i,(double)i);
+        }
+        bins.put("name",depname );
+        bins.put("centers", centers);
+        bins.put("units", JSONObject.NULL );
+        return bins;
+        
+    }    
+    
     private static String getFillValue( CDFReader cdfReader, String name ) throws CDFException.ReaderError {
         Vector v= (Vector)cdfReader.getAttribute(name,"FILLVAL");
         if ( v.size()==1 ) {
@@ -168,12 +181,13 @@ public class EsdcInfoSource {
                     for ( int j=0; j<ss.length; j++ ) {
                         JSONObject bins;
                         try {
-                            String depname= tapParameter.getString(4+j);
+                            String depname= tapParameter.getString(4+j).trim();
                             int len= sizeArray.getInt(j);
                             if ( depname!=null ) {
                                 bins = getBins(cdfFile,cdfReader,depname,len);
                                 if ( bins==null ) {
-                                    binsArray.put(j,JSONObject.NULL);
+                                    bins = getBinsIndgen(depname,len);
+                                    binsArray.put(j,bins);
                                 } else {
                                     binsArray.put(j,bins);
                                     binsHasNonNull= true;
@@ -223,11 +237,12 @@ public class EsdcInfoSource {
         //System.err.println( getInfo("solo_L2_rpw-tnr-surv")); //spectrograms  rank 2 frequencies: file:///home/tomcat/tmp/esdc/jbf/solo_L2_rpw-tnr-surv_20230920_V01.cdf?FREQUENCY
         //System.err.println( getInfo("solo_L2_epd-ept-south-rates")); // spectrograms
         
-        System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-psd") );
-        System.err.println( getInfo("solo_L2_mag-rtn derived from LL data") );
-        System.err.println( getInfo("solo_L2_mag-srf derived from LL data") );
-        System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-def") );
-        System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-dnf") );
-
+        //System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-psd") );
+        //System.err.println( getInfo("solo_L2_mag-rtn derived from LL data") );
+        //System.err.println( getInfo("solo_L2_mag-srf derived from LL data") );
+        //System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-def") );
+        //System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-dnf") );
+        System.err.println( getInfo("solo_L2_swa-eas-pad-def") );
     }
+
 }
