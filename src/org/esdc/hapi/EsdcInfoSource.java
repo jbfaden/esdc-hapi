@@ -193,6 +193,9 @@ public class EsdcInfoSource {
                                     binsArray.put(j,bins);
                                     binsHasNonNull= true;
                                 }
+                            } else {
+                                bins = getBinsIndgen(depname,len);
+                                binsArray.put(j,bins);
                             }
                         } catch (CDFException.ReaderError ex) {
                             logger.log(Level.SEVERE, null, ex);
@@ -219,7 +222,7 @@ public class EsdcInfoSource {
             result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
             
             result.put("HAPI","3.1");
-            result.put("x_version", "20240206.2");
+            result.put("x_version", "20240207.1");
             result.put("x_tap_query", tapQuery );
             result.put("x_cdf_file", cdfFile.toString() );
             
@@ -243,7 +246,8 @@ public class EsdcInfoSource {
         //System.err.println( getInfo("solo_L2_mag-srf derived from LL data") );
         //System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-def") );
         //System.err.println( getInfo("solo_L2a_swa-eas1-nm3d-dnf") );
-        System.err.println( getInfo("solo_L2_swa-eas-pad-def") );
+        //System.err.println( getInfo("solo_L2_swa-eas-pad-def") );
+        System.err.println( getInfo("solo_L2_rpw-lfr-surv-asm") );
     }
 
 }
