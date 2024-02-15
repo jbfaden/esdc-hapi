@@ -137,18 +137,23 @@ public class EsdcAvailabilityInfoSource {
             parameter.put("name","start");
             parameter.put("type","isotime");
             parameter.put("length","24");
+            parameter.put("units","UTC");
+            parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 0, parameter );
 
             parameter= new JSONObject();
             parameter.put("name","stop");
             parameter.put("type","isotime");
             parameter.put("length","24");
+            parameter.put("units","UTC");
+            parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 1, parameter );
             
             parameter= new JSONObject();
             parameter.put("name","filename");
             parameter.put("type","string");
             parameter.put("length","40");
+            parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 2, parameter );
                                     
             result.put("parameters",parameters);
@@ -160,6 +165,7 @@ public class EsdcAvailabilityInfoSource {
             result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
     
             result.put("HAPI","3.1");
+            result.put("x_version","20240215_0905");
             
             return result.toString(4);
         } catch ( Exception e ) {
