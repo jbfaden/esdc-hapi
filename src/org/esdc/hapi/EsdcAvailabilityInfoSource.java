@@ -153,6 +153,7 @@ public class EsdcAvailabilityInfoSource {
             parameter.put("name","filename");
             parameter.put("type","string");
             parameter.put("length",40);
+            parameter.put("units", org.codehaus.jettison.json.JSONObject.NULL);
             parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 2, parameter );
                                     
