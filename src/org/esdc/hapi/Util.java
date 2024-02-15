@@ -1,6 +1,8 @@
 
 package org.esdc.hapi;
 
+import java.util.Collection;
+
 /**
  * These are utilities which should probably be in SourceUtil of HapiServerBase.
  * @author jbf
@@ -25,5 +27,9 @@ public class Util {
         }
         return result;
     }    
+
+    public static String getVersion() {
+        return "20240215.1";
+    }
     
 }

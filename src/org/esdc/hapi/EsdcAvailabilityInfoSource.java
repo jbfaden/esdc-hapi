@@ -166,7 +166,7 @@ public class EsdcAvailabilityInfoSource {
             result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
     
             result.put("HAPI","3.1");
-            result.put("x_version","20240215_0905");
+            result.put("x_version",Util.getVersion());
             
             return result.toString(4);
         } catch ( Exception e ) {
