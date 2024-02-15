@@ -136,7 +136,7 @@ public class EsdcAvailabilityInfoSource {
             parameter = new JSONObject();
             parameter.put("name","start");
             parameter.put("type","isotime");
-            parameter.put("length","24");
+            parameter.put("length",24);
             parameter.put("units","UTC");
             parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 0, parameter );
@@ -144,7 +144,7 @@ public class EsdcAvailabilityInfoSource {
             parameter= new JSONObject();
             parameter.put("name","stop");
             parameter.put("type","isotime");
-            parameter.put("length","24");
+            parameter.put("length",24);
             parameter.put("units","UTC");
             parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 1, parameter );
@@ -152,7 +152,7 @@ public class EsdcAvailabilityInfoSource {
             parameter= new JSONObject();
             parameter.put("name","filename");
             parameter.put("type","string");
-            parameter.put("length","40");
+            parameter.put("length",40);
             parameter.put("fill", org.codehaus.jettison.json.JSONObject.NULL);
             parameters.put( 2, parameter );
                                     
