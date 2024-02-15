@@ -56,6 +56,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
     }
 
     private File getCdfFile( String filename ) throws IOException {
+        logger.entering("EsdcRecordSource","getCdfFile",filename);
         boolean local= false;
         if ( local ) {
             return  new File(filename);
@@ -81,11 +82,14 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
             if ( f.exists() ) {
                 //long ageMillis= System.currentTimeMillis()-f.lastModified();
                 //if ( ageMillis<00000 ) {
+                    logger.exiting("EsdcRecordSource","getCdfFile",filename);
                     return f;
                 //}
             }
             
-            return SourceUtil.downloadFile( url, f );
+            logger.exiting("EsdcRecordSource","getCdfFile",filename);
+            File file= SourceUtil.downloadFile( url, f );
+            return file;
                 
         }
     }
@@ -111,6 +115,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
 
         @Override
         public int[] next() {
+            logger.entering("EsdcRecordSource.EsdcGranuleIterator","next");
             try {
                 String line= iter.next();
                 String[] ss= SourceUtil.stringSplit(line);
@@ -120,6 +125,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
                 }
                 String timeRange=  ss[0]+"/"+ ss[1];
                 files.put( timeRange, ss[3] + "/" + ss[2] );
+                logger.exiting("EsdcRecordSource.EsdcGranuleIterator","next");
                 return TimeUtil.parseISO8601TimeRange( timeRange );
             } catch (ParseException ex) {
                 throw new RuntimeException(ex);
@@ -130,7 +136,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
     
     @Override
     public Iterator<int[]> getGranuleIterator(int[] start, int[] stop) {
-        
+        logger.entering("EsdcRecordSource","getGranuleIterator");
         // https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery
         //   &LANG=ADQL&FORMAT=json
         //   &QUERY=SELECT+filename,+filepath+FROM+v_sc_data_item
@@ -143,7 +149,9 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         
         try {
             Iterator<String> iter= org.hapiserver.source.SourceUtil.getFileLines(new URL(url));
-            return new EsdcGranuleIterator(iter);
+            EsdcGranuleIterator granuleIter = new EsdcGranuleIterator(iter);
+            logger.exiting("EsdcRecordSource","getGranuleIterator");
+            return granuleIter;
             
         } catch (MalformedURLException ex) {
             throw new RuntimeException(ex);
@@ -195,6 +203,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
     @Override
     public Iterator<HapiRecord> getIterator(int[] start, int[] stop, String[] params) {
         try {
+            logger.entering("EsdcRecordSource","getIterator");
             String starts= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", start[0], start[1], start[2], start[3], start[4], start[5], start[6] );
             String stops= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", stop[0], stop[1], stop[2], stop[3], stop[4], stop[5], stop[6]);
             String key= starts + "/" + stops;
@@ -208,11 +217,10 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
             logger.log(Level.FINE, "got CDF file {0}.", cdfFile);
             
             CdfFileRecordIterator result= new CdfFileRecordIterator( info, start, stop, params, cdfFile );
+            logger.exiting("EsdcRecordSource","getIterator");
             return result;
         
-        } catch ( IOException ex ) {
-            throw new RuntimeException(ex);
-        } catch (CDFException.ReaderError ex) {
+        } catch ( IOException | CDFException.ReaderError ex ) {
             throw new RuntimeException(ex);
         }
         

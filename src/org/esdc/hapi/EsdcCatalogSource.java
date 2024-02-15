@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
@@ -23,6 +25,11 @@ import org.codehaus.jettison.json.JSONObject;
 public class EsdcCatalogSource {
     
     private static final Logger logger= Logger.getLogger("hapi.esdc");
+    
+    static {
+        //logger.setLevel(Level.FINER);
+        //logger.finer("logging at FINER");
+    }
     
     private static JSONObject getOKStatus() throws JSONException {
         JSONObject status = new JSONObject();
