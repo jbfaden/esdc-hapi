@@ -45,11 +45,11 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         
     }
     static {
-        logger.setLevel(Level.FINER);
-        ConsoleHandler h= new ConsoleHandler();
-        h.setFormatter( new TimerFormatter() );
-        h.setLevel(Level.ALL);
-        logger.addHandler(h);
+        //logger.setLevel(Level.FINER);
+        //ConsoleHandler h= new ConsoleHandler();
+        //h.setFormatter( new TimerFormatter() );
+        //h.setLevel(Level.ALL);
+        //logger.addHandler(h);
     }
     
     HapiRecord nextRecord;
