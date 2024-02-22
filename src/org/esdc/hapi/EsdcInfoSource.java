@@ -145,7 +145,7 @@ public class EsdcInfoSource {
             JSONArray parameters= new JSONArray();
             JSONObject parameter= new JSONObject();
             
-            String depend0name= tapParameters.getJSONArray(0).getString(0);
+            String depend0name= tapParameters.getJSONArray(0).getString(0).trim();
             
             parameter.put("name",depend0name);
             parameter.put("type","isotime");
