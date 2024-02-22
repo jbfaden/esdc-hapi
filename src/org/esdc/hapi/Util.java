@@ -29,7 +29,7 @@ public class Util {
     }    
 
     public static String getVersion() {
-        return "20240215.1";
+        return "20240222.1";
     }
     
 }
