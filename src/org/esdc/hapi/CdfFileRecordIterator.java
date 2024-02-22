@@ -576,7 +576,12 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
     @Override
     public HapiRecord next() {
         final int j= index;
+        String thisTime= adapters[0].adaptString(j);
         index++;
+        // there are some repeated records, and HAPI does not allow this.
+        while ( index<nindex && adapters[0].adaptString(index).equals(thisTime) ) {
+            index++;
+        }
         return new HapiRecord() {
             @Override
             public String getIsoTime(int i) {
