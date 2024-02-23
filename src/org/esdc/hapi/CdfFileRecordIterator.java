@@ -7,6 +7,7 @@ import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Array;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.util.Iterator;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Formatter;
@@ -70,6 +71,9 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         }
         public int adaptInteger( int index ) {
             return Integer.MIN_VALUE;
+        }
+        public long adaptLong( int index ) {
+            return Long.MIN_VALUE;
         }
         public double[] adaptDoubleArray( int index ) {
             return null;
@@ -305,6 +309,18 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         
         private String formatTime( double t ) {
             long offset= (long)((t-baseTime));  // This must not cross a leap second, will always be in nanos
+            while ( offset<0 ) {
+                try {
+                    offset= offset+3600000000000L;
+                    int[] base= TimeUtil.parseISO8601Time(baseYYYYmmddTHH);
+                    base[3]=base[3]-1;
+                    base= TimeUtil.subtract( base, new int[] { 0, 0, 0, 1, 0, 0, 0 } );
+                    String sbase= TimeUtil.formatIso8601Time(base);
+                    baseYYYYmmddTHH= sbase.substring(0,13);
+                } catch (ParseException ex) {
+                    Logger.getLogger(CdfFileRecordIterator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
             while ( offset>=3600000000000L ) {
                 double hours= offset / 3600000000000L;
                 baseTime = baseTime + hours * 3600000000000L;
@@ -313,6 +329,7 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
                 baseYYYYmmddTHH= TimeUtil.normalizeTimeString(baseYYYYmmddTHH).substring(0,13);
                 offset= (long)((t-baseTime));
             }
+            System.err.println("offset="+offset);
             int nanos= (int)( (offset) % 1000000000. );
             offset= offset / 1000000000; // now it's in seconds
             int seconds= (int)(offset % 60);
@@ -324,6 +341,11 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         public String adaptString(int index) {
             return formatTime( array[index] );
         }
+        
+        public long adaptLong(int index) {
+            return array[index];
+        }
+        
     }
     
     /**
@@ -576,11 +598,18 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
     @Override
     public HapiRecord next() {
         final int j= index;
-        String thisTime= adapters[0].adaptString(j);
+        
+        long thisTimeLong= adapters[0].adaptLong(j);
+        //String thisTime= adapters[0].adaptString(j);
         index++;
         // there are some repeated records, and HAPI does not allow this.
-        while ( index<nindex && adapters[0].adaptString(index).equals(thisTime) ) {
+        while ( index<nindex && adapters[0].adaptLong(index)<thisTimeLong ) {
             index++;
+        }
+        if (index<nindex ) {
+            if ( adapters[0].adaptLong(index)<thisTimeLong ) {
+                System.err.println("here stop");
+            }
         }
         return new HapiRecord() {
             @Override
@@ -631,6 +660,9 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
             @Override
             public int length() {
                 return adapters.length;
+            }
+            public String toString() {
+                return adapters[0].adaptString(j) + " length="+length();
             }
         };
     }
