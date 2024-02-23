@@ -329,7 +329,6 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
                 baseYYYYmmddTHH= TimeUtil.normalizeTimeString(baseYYYYmmddTHH).substring(0,13);
                 offset= (long)((t-baseTime));
             }
-            System.err.println("offset="+offset);
             int nanos= (int)( (offset) % 1000000000. );
             offset= offset / 1000000000; // now it's in seconds
             int seconds= (int)(offset % 60);
@@ -602,15 +601,12 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         long thisTimeLong= adapters[0].adaptLong(j);
         //String thisTime= adapters[0].adaptString(j);
         index++;
+        
         // there are some repeated records, and HAPI does not allow this.
-        while ( index<nindex && adapters[0].adaptLong(index)<thisTimeLong ) {
+        while ( index<nindex && adapters[0].adaptLong(index)<=thisTimeLong ) {
             index++;
         }
-        if (index<nindex ) {
-            if ( adapters[0].adaptLong(index)<thisTimeLong ) {
-                System.err.println("here stop");
-            }
-        }
+
         return new HapiRecord() {
             @Override
             public String getIsoTime(int i) {
