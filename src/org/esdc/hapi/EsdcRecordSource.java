@@ -230,18 +230,26 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         //String id= "solo_L2_rpw-lfr-surv-asm";
         //String id= "solo_L2_mag-srf";
         //String id= "solo_L2_swa-eas-pad-psd";
-        String id= "solo_L2_mag-rtn-normal";
+        //String id= "solo_L2_mag-rtn-normal";
+        //String start= "2023-08-29T00:00:00";
+        //String stop="2023-09-05T00:00:00";
+        //String[] parameters= new String[] { "EPOCH","B_RTN" };
+        String id= "solo_L2_rpw-tnr-surv";
+        String start= "2023-09-20T00:02:20Z";
+        String stop= "2023-09-20T00:03:30Z";
+        String[] parameters= new String[] { "Epoch","TEMPERATURE" };
+                
         String info= EsdcInfoSource.getInfo(id);
         EsdcRecordSource rs= new EsdcRecordSource(id,new JSONObject(info) );
         System.err.println( rs.hasGranuleIterator() );
-        Iterator<int[]> iter= rs.getGranuleIterator( TimeUtil.parseISO8601Time("2023-08-29T00:00:00"), TimeUtil.parseISO8601Time("2023-09-05T00:00:00") );
+        Iterator<int[]> iter= rs.getGranuleIterator( TimeUtil.parseISO8601Time(start), TimeUtil.parseISO8601Time(stop) );
         String t=null;
         int c=0;
         while ( iter.hasNext() ) {
             int[] i= iter.next();
             System.err.println(TimeUtil.formatIso8601TimeRange(i) );
             //rs.getIterator( i, i, args)
-            if ( c==1 ) {
+            if ( c==0 ) {
                 t= TimeUtil.formatIso8601TimeRange(i);
             }
             c++;
@@ -250,7 +258,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
             throw new IllegalStateException("Didn't find time");
         }
         int[] timeRange= TimeUtil.parseISO8601TimeRange(t);
-        Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), new String[] { "EPOCH","B_RTN" } );
+        Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), parameters );
         //Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), new String[] { "Epoch","SWA_EAS_PAD_PSD_Data" } );
         
         while ( iter2.hasNext() ) {
