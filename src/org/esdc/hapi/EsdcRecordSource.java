@@ -261,9 +261,14 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), parameters );
         //Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), new String[] { "Epoch","SWA_EAS_PAD_PSD_Data" } );
         
+        c=0;
         while ( iter2.hasNext() ) {
             HapiRecord rec= iter2.next();
             System.err.println( rec.getIsoTime(0) );
+            if ( c==100 ) {
+                System.exit(0);
+            }
+            c++;
         }
     }
     
