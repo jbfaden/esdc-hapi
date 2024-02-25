@@ -70,7 +70,12 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
                 + "+WHERE+filename=%27"+ff + "%27" );
 
             String u= System.getProperty("user.name"); // getProcessId("000");
-            File p= new File( "/home/tomcat/tmp/esdc/"+u+"/" );
+            File p;
+            if ( System.getProperty("os.name").equals("Mac OS X") ) {
+                p= new File( "/Users/jbf/tmp/esdc/"+u+"/" );
+            } else {
+                p= new File( "/home/tomcat/tmp/esdc/"+u+"/" );
+            }
 
             if ( !p.exists() ) {
                 if ( !p.mkdirs() ) {
