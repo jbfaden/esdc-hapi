@@ -36,6 +36,42 @@ public class EsdcAvailabilityHapiRecordSource extends AbstractHapiRecordSource {
         return false;
     }
 
+    private static class SubsetIterator implements Iterator {
+
+        String next;
+        Iterator<String> iter;
+        String contains;
+        
+        public SubsetIterator( Iterator<String> iter, String contains ) {
+            this.contains= contains+"_";
+            this.iter= iter;
+            if ( iter.hasNext() ) {
+                this.next= iter.next();
+                while ( this.next!=null && !this.next.contains(this.contains) ) {
+                    this.next= this.iter.next();
+                } 
+            } else {
+                this.next= null;
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return next!=null;
+        }
+
+        @Override
+        public Object next() {
+            String result= this.next;
+            this.next= iter.next();
+            while ( this.next!=null && !this.next.contains(this.contains) ) {
+                this.next= this.iter.next();
+            }
+            return result;
+        }
+        
+    }
+    
     @Override
     public Iterator<HapiRecord> getIterator(int[] start, int[] stop) {
 
@@ -46,8 +82,8 @@ public class EsdcAvailabilityHapiRecordSource extends AbstractHapiRecordSource {
                 
         try {
             Iterator<String> iter= org.hapiserver.source.SourceUtil.getFileLines(new URL(url));
-            
-            return new HapiRecordIterator(iter);
+            Iterator<String> subsetIterator= new SubsetIterator(iter,this.id);
+            return new HapiRecordIterator(subsetIterator);
         
         } catch (MalformedURLException ex) {
             throw new RuntimeException(ex);
@@ -119,7 +155,9 @@ public class EsdcAvailabilityHapiRecordSource extends AbstractHapiRecordSource {
         //String id= "solo_L2_swa-eas-pad-psd";
         String id= "availability/solo_L2_mag-rtn-normal";
 
-        String t= "2023-09-01/2023-10-01";
+        //String t= "2023-09-01/2023-10-01";
+        //String t= "2023-10-31T00:00Z/2023-11-01T00:00Z";
+        String t= "2023-01-01T00:00Z/2023-01-03T00:00Z";
         
         int[] timeRange= TimeUtil.parseISO8601TimeRange(t);
         
@@ -129,7 +167,7 @@ public class EsdcAvailabilityHapiRecordSource extends AbstractHapiRecordSource {
         //Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), new String[] { "Epoch","SWA_EAS_PAD_PSD_Data" } );
         
         while ( iter2.hasNext() ) {
-            System.err.println( iter2.next() );
+            System.err.println( iter2.next().getIsoTime(0) );
         }
     }
 
