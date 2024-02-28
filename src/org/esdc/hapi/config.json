@@ -44,5 +44,12 @@
                 }
             }
         }
-    ]
+    ],
+    "x-landing": {
+        "x_footer": {
+            "x_class": "org.esdc.hapi.Util",
+            "x_method":"getVersion",
+            "x_classpath": "file:/home/jbf/temp/esdc-hapi/dist/esdc-hapi.jar"
+        }
+    }
 }
