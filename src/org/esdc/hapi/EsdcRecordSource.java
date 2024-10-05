@@ -31,7 +31,7 @@ import org.hapiserver.source.SourceUtil;
  *
  * EsdcGranuleIterator will show the files for a time range, also keeping
  * track of this internally.  The getIterator method will use this information
- * to fine the CDF files.
+ * to find the CDF files.
  * 
  * "solo_L1_swa-pas-mom_20201020"
  * "solo_L2_mag-rtn-normal-1-minute_20230121" 
