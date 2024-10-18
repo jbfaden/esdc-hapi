@@ -57,3 +57,7 @@ breaking the request into 1-file reads, and then a parameter-subset to get
 the data iterator (Iterator<HapiRecord>)
 
 EsdcAvailabilityInfoSource and EsdcAvailabilityHapiRecordSource implement availability.
+
+Note CdfLeapSeconds.txt will need to be updated when a new leap second is declared.
+
+TODO: The use of id.extent.sample.time.txt needs to be identified.
