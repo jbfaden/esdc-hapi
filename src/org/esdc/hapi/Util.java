@@ -12,8 +12,8 @@ public class Util {
      * parse the string to an integer array.
      * "[1,2,3]" -> new int[] { 1,2,3 }
      * The string may or may not contain brackets.
-     * @param size
-     * @return int array
+     * @param size string like "[1,2,3]"
+     * @return int array like <code>new int[] { 1,2,3 }</code>
      */
     public static int[] parseIntArray(String size) {
         if ( size.startsWith("[") && size.endsWith("]") ) {
@@ -27,6 +27,9 @@ public class Util {
         return result;
     }    
 
+    /**
+     * return version tag to ensure that new version is seen by the server
+     */
     public static String getVersion() {
         return "20240227.1";
     }
