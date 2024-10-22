@@ -11,4 +11,37 @@
         <maven.compiler.target>8</maven.compiler.target>
         <exec.mainClass>org.esdc.hapi.EsdcCatalogSource</exec.mainClass>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>30.1.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>gov.nasa</groupId>
+            <artifactId>cdfj</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/cdfj.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.hapiserver</groupId>
+            <artifactId>URITemplate</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/UriTemplatesJava.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>org.hapiserver</groupId>
+            <artifactId>HapiServerBase</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/lib/HapiServerBase.jar</systemPath>
+        </dependency>
+    </dependencies>    
 </project>
