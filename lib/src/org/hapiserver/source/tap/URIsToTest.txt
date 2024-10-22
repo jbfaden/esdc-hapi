@@ -1,0 +1,77 @@
+
+http://jfaden.net/server/debug/hapi/data?id=C4_CP_STA_CS_NBR&time.min=2000-09-01T00:00Z&time.max=2000-09-01T00:01:42.400Z
+
+http://jfaden.net/server/debug/hapi/data?id=C4_CP_STA_CS_NBR&time.min=2000-09-01T00:00:00.001Z&time.max=2000-09-01T00:00:00.002Z
+
+https://jfaden.net/server/debug/hapi/data?id=C4_CP_STA_CS_NBR&time.min=2000-09-01T00:00Z&time.max=2000-09-01T00:01:42.400Z
+
+https://jfaden.net/server/debug/hapi/data?id=C4_CP_STA_CS_NBR&time.min=2000-09-01T00:00:00.001Z&time.max=2000-09-01T00:00:00.002Z
+
+https://cottagesystems.com/server/esac/hapi/data?id=C4_CP_CIS-CODIF_HS_O1_PEF&parameters=phi__C4_CP_CIS-CODIF_HS_O1_PEF&time.min=2001-01-01T00:00Z&time.max=2001-01-01T00:00:40.000Z
+
+
+https://cottagesystems.com/server/esac/hapi/data?id=C4_CP_CIS-CODIF_HS_O1_PEF&time.min=2001-01-01T00:00Z&time.max=2001-01-01T00:00:40.000Z
+
+https://cottagesystems.com/server/esac/hapi/data?id=C3_CQ_EDI_ANOMALY_AE&time.min=2001-001T00:00Z&time.max=2001-002T00:00:00.000Z
+
+
+https://cottagesystems.com/server/esac/hapi/data?id=C3_CP_CIS-HIA_HS_SW_IONS_RC&parameters=time_tags__C3_CP_CIS-HIA_HS_SW_IONS_RC&time.min=2001-01-01T00:00Z&time.max=2001-01-01T00:00:40.000Z
+
+
+https://cottagesystems.com/server/esac/hapi/data?id=C2_CP_DWP_PCOR_FX&time.min=2001-01-01T00:00:00.001Z&time.max=2001-01-01T00:00:00.002Z
+
+https://cottagesystems.com/server/esac/hapi/data?id=C3_CP_PEA_3DXPAH_DPFlux&parameters=Status_InterferenceFromWHI__C3_CP_PEA_3DXPAH_DPFlux&time.min=2000-09-13T00:00:00.000Z&time.max=2000-09-13T00:00:40.000Z
+
+https://cottagesystems.com/server/esac/hapi/info?id=D1_PP_HIA
+->   https://csa.esac.esa.int/csa-sl-tap/data?retrieval_type=HEADER&DATASET_ID=D1_PP_HIA&FORCEPACK=false
+
+
+http://localhost:8080/HapiServer/hapi/info?id=C3_CP_PEA_3DXPAH_DPFlux  2020-01-01
+
+http://localhost:8080/HapiServer/hapi/data?id=C1_CP_PEA_3DRH_PSD&start=2019-08-01T00:00:00Z&stop=2019-08-02T00:00:00Z&parameters=time_tags__C1_CP_PEA_3DRH_PSD,Data__C1_CP_PEA_3DRH_PSD,Sweep_Azimuth__C1_CP_PEA_3DRH_PSD,Sweep_Energy__C1_CP_PEA_3DRH_PS
+
+vap+hapi:http://localhost:8080/HapiServer/hapi?id=C1_CP_PEA_3DRH_PSD&parameters=time_tags__C1_CP_PEA_3DRH_PSD&timerange=2019-08-01+0:00+to+10:00
+
+This is 1-D data:
+vap+hapi:http://localhost:8080/HapiServer/hapi?id=C1_CP_PEA_3DRH_PSD&parameters=time_tags__C1_CP_PEA_3DRH_PSD,Angle_SR2phi__C1_CP_PEA_3DRH_PSD&timerange=2019-08-01+0:00+to+0:10
+
+This with 3-D data:
+vap+hapi:http://localhost:8080/HapiServer/hapi?id=C1_CP_PEA_3DRH_PSD&parameters=time_tags__C1_CP_PEA_3DRH_PSD,Data__C1_CP_PEA_3DRH_PSD&timerange=2019-08-01+0:00+to+0:10
+
+# This has the problem https://github.com/hapi-server/server-java/issues/21
+vap+hapi:http://localhost:8080/HapiServer/hapi/data?id=C4_CP_STA_CS_NBR&time.min=2022-07-31T11:00Z&time.max=2022-08-01T00:00Z
+
+# processors start racing with:
+C4_CP_WHI_NATURAL -- fixed, this was because of regex expression used to parse CEF output.  My guardedSplit doesn't have the issue.
+
+# strange 500 error because wrong fill value is used.
+vap+hapi:https://cottagesystems.com/server/debug/hapi?id=C1_PP_WHI&timerange=2012-12-08+through+2012-12-31
+
+http://localhost:8080/HapiServer/hapi/info?id=C1_CP_PEA_3DRL_cnts
+http://localhost:8080/HapiServer/hapi/data?id=C1_CP_PEA_3DRL_cnts&start=2019-01-01T00:00:00Z&stop=2019-01-01T01:00:00Z&parameters=time_tags__C1_CP_PEA_3DRL_cnts,Data__C1_CP_PEA_3DRL_cnts,Sweep_Azimuth__C1_CP_PEA_3DRL_cnts,Sweep_Energy__C1_CP_PEA_3DRL_cnts
+
+
+# ArrayIndexOutOfBounds
+http://localhost:8080/HapiServer/hapi/data?id=C4_CP_WHI_ACTIVE&start=2022-12-31T18:00Z&stop=2023-01-01T00:00Z
+
+# strange 500 detected by verifier
+http://localhost:8080/HapiServer/hapi/data?id=C4_PP_WHI&time.min=2012-12-31T18:00Z&time.max=2013-01-01T00:00Z
+
+# "# rows in single parameter request = 4804 # in all parameter request = 7"
+https://cottagesystems.com/server/debug/hapi/data?id=C4_PP_WHI&parameters=E_pow_f5&time.min=2012-12-31T18:00Z&time.max=2013-01-01T00:00Z
+
+# Type = string and length = undefined for parameter Receiving_Antenna
+https://cottagesystems.com/server/debug/hapi/info?id=C4_CP_WHI_ACTIVE_TO_PASSIVE_RATIO
+  
+# is.LengthAppropriate() If type = string or isotime, length must be given; Got:
+https://cottagesystems.com/server/debug/hapi/data?id=C4_CP_WHI_ACTIVE&parameters=Receiving_Antenna&time.min=2022-12-31T18:00Z&time.max=2023-01-01T00:00Z
+
+# Is not a valid time string ('2022-12-31T00:10:57.669ZZ')
+https://cottagesystems.com/server/debug/hapi/data?id=C4_CT_WHI_ACTIVE_EVENT&parameters=Emission_Reception_Delay&time.min=2022-12-31T00:00Z&time.max=2023-01-01T00:00Z
+
+# is.TimeIncreasing() Expect Time(line=1) > Time(line=0); Got:
+https://cottagesystems.com/server/debug/hapi/data?id=C4_CT_WHI_NATURAL_EVENT&parameters=fft_size&time.min=2022-12-25T00:00Z&time.max=2023-01-01T00:00Z
+
+# Timeout.
+https://cottagesystems.com/server/debug/hapi/data?id=C3_CP_WHI_NATURAL&parameters=time_tags&time.min=2022-12-31T18:00Z&time.max=2023-01-01T00:00Z
+https://cottagesystems.com/server/debug/hapi/data?id=C3_CP_WHI_WAVE_FORM_ENERGY&time.min=2022-12-31T18:00Z&time.max=2023-01-01T00:00Z&include=header

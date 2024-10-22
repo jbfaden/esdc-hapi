@@ -1,0 +1,4 @@
+{
+    "server":"https://jupiter.physics.uiowa.edu/das/server",
+    "include":[ "Juno/Ephemeris/.*", "Juno/JED/ElectronSpectra" ]
+}

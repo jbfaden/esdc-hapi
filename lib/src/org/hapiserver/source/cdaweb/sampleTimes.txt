@@ -1,0 +1,8 @@
+# see https://github.com/autoplot/dev/blob/master/demos/2023/20230516/unplotCdawebAvail.jy
+WI_SW_ION_DIST_SWE_FARADAY 1994-12-31T01:52:02.767Z 2023-05-03T00:18:40.461Z
+WI_STRAHL0_SWE 1995-02-05T09:26:27.320Z 2001-07-23T21:43:03.285Z
+WI_SOSP_3DP 1995-02-05T09:26:27.320Z 2023-06-08T07:53:05.014Z
+WI_SOSD_3DP 1995-02-05T09:26:27.320Z 2023-06-08T07:53:05.014Z
+# http://localhost:8080/HapiServer/hapi/data?id=A1_K0_MPA&time.min=2001-08-31T00:03:18Z&time.max=2001-09-01T00:03:18.000Z
+# http://localhost:8080/HapiServer/hapi/data?id=availability/A1_K0_MPA&time.min=2001-08-01T00:03:18Z&time.max=2001-09-01T00:00:00.000Z
+DE_UV_SAI double[][][]

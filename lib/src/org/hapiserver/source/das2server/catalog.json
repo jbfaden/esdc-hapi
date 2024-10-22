@@ -1,0 +1,26 @@
+{
+    "HAPI": "3.0",
+    "catalog": [
+        {
+            "x_group_id": "das2server",
+            "x_source": "classpath",
+            "x_class": "org.hapiserver.source.das2server.Das2ServerCatalogSource",
+            "x_method": "getCatalog",
+            "x_args": [ "planet-d2s.json" ],
+            "x_config": {
+                "info": {
+                    "x_source": "classpath",
+                    "x_class": "org.hapiserver.source.das2server.Das2ServerInfoSource",
+                    "x_method": "getInfo",
+                    "x_args": ["planet-d2s.json","${id}"]
+                },
+                "data": {
+                    "x_source": "classpath",
+                    "x_class": "org.hapiserver.source.das2server.Das2ServerDataSource",
+                    "x_method": "getRecordSource",
+                    "x_args": ["planet-d2s.json","${id}","${info}"]
+                }
+            }
+        }
+    ]
+}

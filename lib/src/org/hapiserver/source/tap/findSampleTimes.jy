@@ -1,0 +1,38 @@
+setScriptDescription('''Make a database of sample start/stop times for each ID,
+based on the availability datasets.''')
+
+include=getParam('include','C1','ids must start with this',['C1','C2','C3','C4','CP','D1','D2']) # ids must start with
+exclude='CP_PEA'  # ids cannot contain
+
+out= open( '/tmp/ap/esac.avail.%s.txt' % include, 'w' )
+cc= getCompletions('vap+hapi:https://cottagesystems.com/server/esac/hapi?id='+include)
+
+monitor.taskSize=len(cc)
+monitor.started()
+
+for c in cc:
+    print c
+    monitor.taskProgress= monitor.taskProgress + 1
+    if c.endswith('/availability'):
+        ids= c[56:-13]
+        if ids.find(exclude)>-1:
+            print 'skipping because of exclude: '+ids
+            continue
+        year_mon= datumRange('2020-2023')
+        stop_year= datum('2001-01-01T00:00Z')
+        ds=None
+        print ids
+        while ds==None and year_mon.min().gt(stop_year):
+            try:
+                ds= getDataSet( c, year_mon )
+            except:
+                ds= None
+            year_mon= year_mon.previous()
+            print '  ...', year_mon
+        if ds==None:
+            out.write( '%s None\n' % ( ids ) )
+        else:
+            print ids,ds[-1,0].svalue(),ds[-1,1].svalue()
+            out.write( '%s %s %s\n' % ( ids,  ds[-1,0].svalue(),ds[-1,1].svalue() ) )
+out.close()
+monitor.finished()

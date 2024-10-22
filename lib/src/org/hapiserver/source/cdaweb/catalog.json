@@ -1,0 +1,52 @@
+ {
+     "HAPI": "3.0",
+     "catalog": [
+         {
+            "x_group_id": "cdaweb",
+             "_x_source": "spawn",
+             "_x_command": "wget -O - https://cdaweb.gsfc.nasa.gov/hapi/catalog",
+             "x_source": "classpath",
+             "x_class": "org.hapiserver.source.cdaweb.CdawebInfoCatalogSource",
+             "x_method": "getCatalog20230629",
+             "x_config": {
+                 "info": {
+                     "x_source":"classpath",
+                     "x_class":"org.hapiserver.source.cdaweb.CdawebInfoCatalogSource",
+                     "x_method": "getInfo",
+                     "x_args": [ "${id}" ]
+                 },
+                 "_info": {
+                    "source":"spawn",
+                    "command":"wget -O - https://cdaweb.gsfc.nasa.gov/hapi/info?id=${id}"
+                 },
+                 "data": {
+                     "source": "classpath",
+                     "class":"org.hapiserver.source.cdaweb.CdawebServicesHapiRecordSource"
+                 }
+             }
+         },
+         {
+             "x_group_id": "cdaweb_availability", 
+             "x_source": "classpath",
+             "x_class": "org.hapiserver.source.cdaweb.CdawebAvailabilitySource",
+             "x_method": "getCatalog",
+             "x_config": {
+                 "info": {
+                     "x_source":"classpath",
+                     "x_class":"org.hapiserver.source.cdaweb.CdawebAvailabilitySource",
+                     "x_method": "getInfo",
+                     "x_args": [ "${id}" ]
+                 },
+                 "data": {
+                     "x_source": "classpath",
+                     "x_class":"org.hapiserver.source.cdaweb.CdawebAvailabilitySource"
+                 }
+             }
+         }
+         
+     ],
+     "status": {
+         "code": 1200,
+         "message": "OK request successful"
+     }
+ }

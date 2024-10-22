@@ -1,0 +1,5 @@
+C4_CP_CIS-CODIF_HS_O1_PEF	2021-12-01T00:00Z/2021-12-02T00:00Z
+wget -O - 'http://localhost:8080/HapiServer/hapi/data?id=C4_CP_CIS-CODIF_HS_O1_PEF&start=2021-11-30T23:59:56Z&stop=2021-12-02T00:00:04Z&parameters=time_tags__C4_CP_CIS-CODIF_HS_O1_PEF'
+wget -O - 'https://csa.esac.esa.int/csa-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=CSV&QUERY=SELECT+dataset_id,title,start_date,end_date+FROM+csa.v_dataset+where+dataset_id=%27C4_CP_CIS-CODIF_HS_O1_PEF%27'
+wget -O - 'https://csa.esac.esa.int/csa-sl-tap/data?retrieval_type=HEADER&DATASET_ID=C4_CP_CIS-CODIF_HS_O1_PEF&FORCEPACK=false"
+wget -O - 'https://csa.esac.esa.int/csa-sl-tap/data?RETRIEVAL_TYPE=product&RETRIEVAL_ACCESS=streamed&DATASET_ID=C4_CP_CIS-CODIF_HS_O1_PEF&START_DATE=2021-12-01T00:00:00.000Z&END_DATE=2021-12-02T00:00:00.000Z"

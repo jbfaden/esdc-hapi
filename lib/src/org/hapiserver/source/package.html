@@ -1,0 +1,9 @@
+<body>
+    <p>A HapiRecordSource is an object which will provide an iterator for the
+HAPI records.  This object is queried to see if it supports one query for 
+arbitrary time ranges, or if particular intervals should be queried.  For 
+example, if the source is based on daily files, then the record source can
+implement the iterator for one file, and the server itself will combine
+(aggregate) the data.</p>
+    <p>A HapiRecord iterator provides each of the records to the server.</p>
+</body>
