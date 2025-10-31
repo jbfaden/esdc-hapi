@@ -11,6 +11,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.hapiserver.AbstractHapiRecord;
 import org.hapiserver.AbstractHapiRecordSource;
 import org.hapiserver.HapiRecord;
+import org.hapiserver.TimeString;
 import org.hapiserver.TimeUtil;
 import org.hapiserver.source.SourceUtil;
 
@@ -73,11 +74,11 @@ public class EsdcAvailabilityHapiRecordSource extends AbstractHapiRecordSource {
     }
     
     @Override
-    public Iterator<HapiRecord> getIterator(int[] start, int[] stop) {
+    public Iterator<HapiRecord> getIterator( TimeString start, TimeString stop) {
 
         // https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT+filename,+filepath,file_format+FROM+v_sc_data_item&begin_time%3E%272020-08-29+00:00:28%27&end_time%3E%272020-09-06+00:00:28%27&file_format=%27CDF%27
-        String begin= TimeUtil.formatIso8601Time(start);
-        String end=  TimeUtil.formatIso8601Time(stop);                                                                                                                                                                                                                 // "+id+"%25%27+ORDER+BY+begin_time+ASC";        
+        String begin= start.toIsoTime().substring(0,24);
+        String end= stop.toIsoTime().substring(0,24);
         String url= "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=csv&QUERY=SELECT+begin_time,end_time,filename,+filepath+FROM+v_sc_data_item+WHERE+end_time%3E%27"+begin+"%27+AND+begin_time%3C%27"+end+"%27+AND+data_item_id+LIKE+%27"+id+"%25%27+ORDER+BY+begin_time+ASC";
                 
         try {
@@ -163,8 +164,7 @@ public class EsdcAvailabilityHapiRecordSource extends AbstractHapiRecordSource {
         
         EsdcAvailabilityHapiRecordSource rs= new EsdcAvailabilityHapiRecordSource(id,null);
         
-        Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange) );
-        //Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), new String[] { "Epoch","SWA_EAS_PAD_PSD_Data" } );
+        Iterator<HapiRecord> iter2= rs.getIterator( TimeString.getStartTime(timeRange), TimeString.getStopTime(timeRange) );
         
         while ( iter2.hasNext() ) {
             System.err.println( iter2.next().getIsoTime(0) );

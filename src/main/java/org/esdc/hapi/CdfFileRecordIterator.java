@@ -18,6 +18,7 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.hapiserver.HapiRecord;
+import org.hapiserver.TimeString;
 import org.hapiserver.TimeUtil;
 
 /**
@@ -483,7 +484,7 @@ public class CdfFileRecordIterator  implements Iterator<HapiRecord> {
         }
     }
     
-    public CdfFileRecordIterator( JSONObject info, int[] start, int[] stop, String[] params, File tmpFile ) throws CDFException.ReaderError {
+    public CdfFileRecordIterator( JSONObject info, TimeString start, TimeString stop, String[] params, File tmpFile ) throws CDFException.ReaderError {
          
         try {
             adapters= new Adapter[params.length];

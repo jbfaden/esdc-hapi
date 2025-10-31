@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.hapiserver.TimeString;
 import org.hapiserver.TimeUtil;
 import org.hapiserver.source.SourceUtil;
 
@@ -136,7 +137,7 @@ public class EsdcInfoSource {
             String tapQuery= svr + "?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=select%20"+select+"%20from%20soar.v_cdf_plot_metadata%20where%20logical_source%20=%20%27"+id+"%27";
             String tapJsonSrc= SourceUtil.getAllFileLines( new URL(tapQuery) );
             
-            String[] extent= EsdcAvailabilityInfoSource.getExtent(id);
+            TimeString[] extent= EsdcAvailabilityInfoSource.getExtent(id);
             
             JSONObject tapResponse= new JSONObject(tapJsonSrc);
             JSONArray tapParameters= tapResponse.getJSONArray("data");
@@ -215,11 +216,11 @@ public class EsdcInfoSource {
             }
             
             result.put("parameters",parameters);
-            result.put("startDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[0]));
-            result.put("stopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[1]));
+            result.put("startDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[0].toIsoTime()));
+            result.put("stopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[1].toIsoTime()));
 
-            result.put("sampleStartDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[2]));
-            result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
+            result.put("sampleStartDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[2].toIsoTime()));
+            result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3].toIsoTime()));
             
             result.put("HAPI","3.1");
             result.put("x_version", Util.getVersion());

@@ -15,6 +15,7 @@ import java.util.Map;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.hapiserver.TimeString;
 import org.hapiserver.TimeUtil;
 import org.hapiserver.source.SourceUtil;
 
@@ -42,7 +43,7 @@ public class EsdcAvailabilityInfoSource {
      * @param id the SOAR ID
      * @return a four-element string containing the start, stop, sampleStart, and sampleStop.
      */
-    public static String[] getExtent( String id ) {
+    public static TimeString[] getExtent( String id ) {
         
         // put a little cache of extents to aid in development.  TODO: This should be removed at some point before
         // putting this into production.
@@ -72,7 +73,7 @@ public class EsdcAvailabilityInfoSource {
         
         String[] r= extents.get(id);
         if ( r!=null ) {
-            return r;
+            return new TimeString[] { new TimeString(r[0]), new TimeString(r[1]), new TimeString(r[2]), new TimeString(r[3]) };
         }
         
         try {
@@ -113,7 +114,10 @@ public class EsdcAvailabilityInfoSource {
             String sampleStartTime= fields[0];
             String sampleStopTime= fields[1];
             
-            return new String[] { startTime, stopTime, sampleStartTime, sampleStopTime };
+            return new TimeString[] { new TimeString(startTime), 
+                new TimeString(stopTime), 
+                new TimeString(sampleStartTime),
+                new TimeString(sampleStopTime) };
             
             
         } catch (IOException ex) {
@@ -125,7 +129,7 @@ public class EsdcAvailabilityInfoSource {
         // get the start and stop of the mission, using TAP "TOP" keyword.
         
         String id= availId.substring("availability/".length());
-        String[] extent= getExtent(id);
+        TimeString[] extent= getExtent(id);
         
         try {
             JSONObject result= new JSONObject();
@@ -159,11 +163,11 @@ public class EsdcAvailabilityInfoSource {
                                     
             result.put("parameters",parameters);
             
-            result.put("startDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[0]));
-            result.put("stopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[1]));
+            result.put("startDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[0].toIsoTime()));
+            result.put("stopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[1].toIsoTime()));
 
-            result.put("sampleStartDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[2]));
-            result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3]));
+            result.put("sampleStartDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[2].toIsoTime()));
+            result.put("sampleStopDate",TimeUtil.reformatIsoTime("2000-01-01T00:00:00.000Z", extent[3].toIsoTime()));
     
             result.put("HAPI","3.1");
             result.put("x_version",Util.getVersion());
@@ -186,7 +190,7 @@ public class EsdcAvailabilityInfoSource {
             String id= cc.getJSONObject(i).getString("id");
             System.err.println("Loading sample time and file for "+id);
             try {
-                String[] ss= EsdcAvailabilityInfoSource.getExtent(id);
+                TimeString[] ss= EsdcAvailabilityInfoSource.getExtent(id);
                 p.println( String.format( "%s,%s,%s,%s,%s", id, ss[0], ss[1], ss[2], ss[3] ) );
                 EsdcRecordSource recsrc= new EsdcRecordSource("solo_L2_epd-ept-south-rates",null);
                 System.err.println( recsrc.getSampleCdfFile() );

@@ -16,6 +16,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.hapiserver.AbstractHapiRecordSource;
 import org.hapiserver.HapiRecord;
+import org.hapiserver.TimeString;
 import org.hapiserver.TimeUtil;
 import org.hapiserver.source.SourceUtil;
 
@@ -105,7 +106,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         return true;
     }
 
-    private class EsdcGranuleIterator implements Iterator<int[]> {
+    private class EsdcGranuleIterator implements Iterator<TimeString[]> {
 
         private final Iterator<String> iter;
                 
@@ -119,28 +120,24 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         }
 
         @Override
-        public int[] next() {
+        public TimeString[] next() {
             logger.entering("EsdcRecordSource.EsdcGranuleIterator","next");
-            try {
-                String line= iter.next();
-                String[] ss= SourceUtil.stringSplit(line);
-                if ( ss[0].startsWith("begin") && iter.hasNext() ) { 
-                    line= iter.next();
-                    ss= SourceUtil.stringSplit(line);
-                }
-                String timeRange=  ss[0]+"/"+ ss[1];
-                files.put( timeRange, ss[3] + "/" + ss[2] );
-                logger.exiting("EsdcRecordSource.EsdcGranuleIterator","next");
-                return TimeUtil.parseISO8601TimeRange( timeRange );
-            } catch (ParseException ex) {
-                throw new RuntimeException(ex);
+            String line= iter.next();
+            String[] ss= SourceUtil.stringSplit(line);
+            if ( ss[0].startsWith("begin") && iter.hasNext() ) { 
+                line= iter.next();
+                ss= SourceUtil.stringSplit(line);
             }
+            String timeRange=  ss[0]+"/"+ ss[1];
+            files.put( timeRange, ss[3] + "/" + ss[2] );
+            logger.exiting("EsdcRecordSource.EsdcGranuleIterator","next");
+            return new TimeString[] { new TimeString(ss[0]), new TimeString(ss[1]) };
         }
         
     }
     
     @Override
-    public Iterator<int[]> getGranuleIterator(int[] start, int[] stop) {
+    public Iterator<TimeString[]> getGranuleIterator(TimeString start, TimeString stop) {
         logger.entering("EsdcRecordSource","getGranuleIterator");
         // https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery
         //   &LANG=ADQL&FORMAT=json
@@ -148,8 +145,8 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         //    +WHERE+((instrument=%27MAG%27)+OR+(instrument=%27EPD%27))
         //    +AND+begin_time%3E%272020-08-29+00:00:28%27
         // https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=json&QUERY=SELECT+filename,+filepath,file_format+FROM+v_sc_data_item&begin_time%3E%272020-08-29+00:00:28%27&end_time%3E%272020-09-06+00:00:28%27&file_format=%27CDF%27
-        String begin= TimeUtil.formatIso8601Time(start);
-        String end=  TimeUtil.formatIso8601Time(stop);
+        String begin= start.toIsoTime().substring(0,24);
+        String end=  stop.toIsoTime().substring(0,24);
         String url= "https://soar.esac.esa.int/soar-sl-tap/tap/sync?REQUEST=doQuery&LANG=ADQL&FORMAT=csv&QUERY=SELECT+begin_time,end_time,filename,+filepath+FROM+v_sc_data_item+WHERE+end_time%3E%27"+begin+"%27+AND+begin_time%3C%27"+end+"%27+AND+data_item_id+LIKE+%27"+id+"%25%27+ORDER+BY+begin_time+ASC";
         
         try {
@@ -184,33 +181,29 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
      * @throws IOException 
      */
     public File getSampleCdfFile( ) throws IOException {
-        try {
-            String[] ss= EsdcAvailabilityInfoSource.getExtent(id);
-            int[] start= TimeUtil.parseISO8601Time(ss[2]);
-            int[] stop= TimeUtil.parseISO8601Time(ss[3]);
-            Iterator<int[]> it= this.getGranuleIterator( start, stop );
-            while ( it.hasNext() ) {
-                it.next();
-            }
-            String starts= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", start[0], start[1], start[2], start[3], start[4], start[5], start[6] );
-            String stops= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", stop[0], stop[1], stop[2], stop[3], stop[4], stop[5], stop[6]);
-            String key= starts + "/" + stops;
-            String filename= files.get(key);
-            if ( filename==null ) {
-                throw new IllegalStateException("this shouldn't happen");
-            }
-            return getCdfFile(filename);
-        } catch (ParseException ex) {
-            throw new RuntimeException(ex);
+        TimeString[] ss= EsdcAvailabilityInfoSource.getExtent(id);
+        Iterator<TimeString[]> it= this.getGranuleIterator( ss[2], ss[3] );
+        while ( it.hasNext() ) {
+            it.next();
         }
+        String starts= ss[2].toIsoTime().substring(0,21);
+        String stops= ss[3].toIsoTime().substring(0,21); // "%4d-%02d-%02dT%02d:%02d:%02d.%01d", stop[0], stop[1], stop[2], stop[3], stop[4], stop[5], stop[6]
+        String key= starts + "/" + stops;
+        String filename= files.get(key);
+        if ( filename==null ) {
+            throw new IllegalStateException("this shouldn't happen");
+        }
+        return getCdfFile(filename);
     }
     
     @Override
-    public Iterator<HapiRecord> getIterator(int[] start, int[] stop, String[] params) {
+    public Iterator<HapiRecord> getIterator(TimeString start, TimeString stop, String[] params) {
         try {
             logger.entering("EsdcRecordSource","getIterator");
-            String starts= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", start[0], start[1], start[2], start[3], start[4], start[5], start[6] );
-            String stops= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", stop[0], stop[1], stop[2], stop[3], stop[4], stop[5], stop[6]);
+            String starts= start.toIsoTime().substring(0,21);
+            String stops= stop.toIsoTime().substring(0,21);
+            //String starts= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", start[0], start[1], start[2], start[3], start[4], start[5], start[6] );
+            //String stops= String.format( "%4d-%02d-%02dT%02d:%02d:%02d.%01d", stop[0], stop[1], stop[2], stop[3], stop[4], stop[5], stop[6]);
             String key= starts + "/" + stops;
             String filename= files.get(key);
             if ( filename==null ) {
@@ -247,15 +240,15 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
         String info= EsdcInfoSource.getInfo(id);
         EsdcRecordSource rs= new EsdcRecordSource(id,new JSONObject(info) );
         System.err.println( rs.hasGranuleIterator() );
-        Iterator<int[]> iter= rs.getGranuleIterator( TimeUtil.parseISO8601Time(start), TimeUtil.parseISO8601Time(stop) );
+        Iterator<TimeString[]> iter= rs.getGranuleIterator( new TimeString(start), new TimeString(stop) );
         String t=null;
         int c=0;
         while ( iter.hasNext() ) {
-            int[] i= iter.next();
-            System.err.println(TimeUtil.formatIso8601TimeRange(i) );
+            TimeString[] i= iter.next();
+            System.err.println( String.format("%s/%s", i[0], i[1] ) );
             //rs.getIterator( i, i, args)
             if ( c==0 ) {
-                t= TimeUtil.formatIso8601TimeRange(i);
+                t=  String.format("%s/%s", i[0], i[1] );
             }
             c++;
         }
@@ -263,7 +256,7 @@ public class EsdcRecordSource extends AbstractHapiRecordSource {
             throw new IllegalStateException("Didn't find time");
         }
         int[] timeRange= TimeUtil.parseISO8601TimeRange(t);
-        Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), parameters );
+        Iterator<HapiRecord> iter2= rs.getIterator( TimeString.getStartTime(timeRange), TimeString.getStopTime(timeRange), parameters );
         //Iterator<HapiRecord> iter2= rs.getIterator( TimeUtil.getStartTime(timeRange), TimeUtil.getStopTime(timeRange), new String[] { "Epoch","SWA_EAS_PAD_PSD_Data" } );
         
         c=0;
